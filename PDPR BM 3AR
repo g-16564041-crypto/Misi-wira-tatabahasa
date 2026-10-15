@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Misi Wira Tatabahasa: Selamatkan Pulau Bahasa!</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+:root{--primary:#4A90E2;--secondary:#50E3C2;--accent:#FFD166;--danger:#FF6B6B;--success:#06D6A0;--dark:#26384a}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Fredoka','Comic Sans MS','Segoe UI',sans-serif}
+body{background:linear-gradient(135deg,#1A2980,#26D0CE);min-height:100vh;padding:15px;color:var(--dark)}
+#game-container{width:100%;max-width:1050px;margin:auto;background:rgba(255,255,255,.97);border-radius:24px;box-shadow:0 20px 40px rgba(0,0,0,.3);overflow:hidden;border:6px solid #fff;min-height:700px}
+header{background:#26384a;color:#fff;padding:12px 22px;display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:4px solid var(--accent);flex-wrap:wrap}
+.hero-info,.header-controls{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.badge-pill{background:var(--accent);color:#26384a;padding:5px 12px;border-radius:20px;font-weight:bold}
+.btn-icon{background:#415B76;border:0;color:#fff;padding:8px 13px;border-radius:12px;cursor:pointer;font-weight:bold}
+.screen{display:none;padding:25px;min-height:630px;flex-direction:column;justify-content:center;align-items:center;text-align:center}.screen.active{display:flex}
+h1{font-size:clamp(2rem,5vw,3.1rem);font-weight:700}.hero{font-size:7rem;animation:bounce 2s infinite}.small-hero{font-size:4rem}
+@keyframes bounce{50%{transform:translateY(-12px)}}
+.form-group{width:100%;max-width:420px;margin:0 auto 18px;text-align:left}.form-group label{display:block;font-weight:bold;margin-bottom:6px}
+.form-control{width:100%;padding:13px 16px;border:3px solid #CBD5E1;border-radius:14px;font-size:1rem}
+.btn-primary,.btn-secondary,.btn-danger{border:0;color:#fff;font-weight:bold;border-radius:50px;cursor:pointer;transition:.15s}
+.btn-primary{background:#10B981;padding:14px 30px;font-size:1.15rem;box-shadow:0 5px #059669}.btn-secondary{background:#3B82F6;padding:10px 22px;box-shadow:0 4px #2563EB}.btn-danger{background:#EF4444;padding:10px 22px}
+.btn-primary:active,.btn-secondary:active{transform:translateY(3px)}
+.mode-selector{display:flex;gap:8px}.mode-btn{flex:1;padding:10px;border:3px solid #CBD5E1;background:#fff;border-radius:12px;cursor:pointer;font-weight:bold}.mode-btn.active{border-color:#4A90E2;background:#EBF5FF;color:#2563EB}
+.missions{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;width:100%;max-width:900px;margin:20px 0}
+.mission{border:4px solid #CBD5E1;border-radius:18px;padding:15px;background:#fff;cursor:pointer;transition:.2s}.mission:hover{transform:translateY(-4px)}.mission.locked{opacity:.45;cursor:not-allowed}.mission.done{border-color:#10B981;background:#ECFDF5}.mission.boss{border-color:#EF4444;background:#FFF1F2}
+.mission-icon{font-size:2.5rem}.mission h3{font-size:1rem;margin:5px 0}.mission p{font-size:.75rem}
+.stats{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;background:#F1F5F9;padding:12px 16px;border-radius:15px;width:100%;font-weight:bold}
+.lives{letter-spacing:2px}.progress{width:100%;height:13px;background:#E2E8F0;border-radius:20px;overflow:hidden;margin:14px 0}.progress>div{height:100%;background:linear-gradient(90deg,#10B981,#059669);transition:.3s}
+.question-box{background:#fff;border:3px solid #E2E8F0;border-radius:20px;padding:22px;width:100%;margin-bottom:16px;box-shadow:0 4px 8px rgba(0,0,0,.05)}.category{display:inline-block;background:#E0F2FE;color:#0369A1;padding:4px 12px;border-radius:20px;font-size:.82rem;font-weight:bold;margin-bottom:9px}.question{font-size:clamp(1.15rem,2.5vw,1.45rem);font-weight:700;line-height:1.5}
+.options{display:grid;grid-template-columns:repeat(2,1fr);gap:11px;width:100%}.option{background:#fff;border:3px solid #E2E8F0;padding:14px 17px;border-radius:15px;font-size:1rem;font-weight:600;cursor:pointer;text-align:left}.option:hover{border-color:#4A90E2;background:#F0F7FF}.correct{background:#D1FAE5!important;border-color:#10B981!important}.wrong{background:#FEE2E2!important;border-color:#EF4444!important}
+.explanation{display:none;margin-top:14px;padding:14px;border-radius:12px;background:#EFF6FF;border-left:5px solid #3B82F6;text-align:left;width:100%}
+.card{background:#fff;border:3px solid #E2E8F0;border-radius:18px;padding:20px;width:100%;max-width:700px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.badges{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:15px 0}.badge{background:#FFF7ED;border:2px solid #FDBA74;padding:10px 14px;border-radius:14px;font-weight:bold}
+table{width:100%;border-collapse:collapse;margin-top:12px}th,td{padding:10px;border-bottom:1px solid #E2E8F0;text-align:left}th{background:#F1F5F9}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99;align-items:center;justify-content:center;padding:20px}.modal-card{background:#fff;border-radius:20px;padding:25px;max-width:650px;width:100%;max-height:85vh;overflow:auto}
+@media(max-width:800px){.missions{grid-template-columns:repeat(2,1fr)}.options,.grid2{grid-template-columns:1fr}}
+@media(max-width:500px){.missions{grid-template-columns:1fr}.screen{padding:18px}.hero{font-size:5rem}}
+</style>
+</head>
+<body>
+<div id="game-container">
+<header>
+  <div class="hero-info">🛡️ Wira: <span id="hero-name-display" style="color:#FFD166">Pahlawan</span>
+    <span class="badge-pill">⭐ <span id="score-display">0</span></span>
+    <span class="badge-pill">❤️ <span id="lives-display">5</span></span>
+  </div>
+  <div class="header-controls">
+    <button class="btn-icon" onclick="showMap()">🗺️ Peta</button>
+    <button class="btn-icon" onclick="showReview()">📖 Ulang Kaji</button>
+    <button class="btn-icon" onclick="showLeaderboard()">🏆 Leaderboard</button>
+    <button class="btn-icon" onclick="toggleSound()">🔊 Bunyi</button>
+  </div>
+</header>
+
+<section id="welcome" class="screen active">
+  <div class="hero">🦸‍♂️</div>
+  <h1>🏝️ Misi Wira Tatabahasa</h1>
+  <p style="max-width:650px;margin:8px auto 20px;font-size:1.1rem">Selamatkan Pulau Bahasa daripada raksasa Kesalahan Tatabahasa! Lengkapkan 5 misi, kumpul markah, dapatkan lencana dan kalahkan Boss Bahasa.</p>
+  <div class="form-group"><label>Nama Wira:</label><input id="hero-name" class="form-control" placeholder="Masukkan nama anda..." value="Wira Bahasa"></div>
+  <div class="form-group"><label>Tahap Cabaran:</label><div class="mode-selector">
+    <button class="mode-btn active" onclick="setDifficulty('mudah',this)">Mudah</button>
+    <button class="mode-btn" onclick="setDifficulty('sederhana',this)">Sederhana</button>
+    <button class="mode-btn" onclick="setDifficulty('sukar',this)">Sukar</button>
+  </div></div>
+  <button class="btn-primary" onclick="startGame()">🚀 Mula Misi</button>
+  <p style="margin-top:15px;font-size:.9rem">40 soalan • 5 misi • nyawa • lencana • Boss • leaderboard</p>
+</section>
+
+<section id="map" class="screen">
+  <h2 style="font-size:2rem;font-weight:bold">🗺️ Peta Pulau Bahasa</h2>
+  <p>Lengkapkan misi mengikut urutan. Misi 5 ialah pertempuran Boss!</p>
+  <div class="missions" id="missions"></div>
+  <div class="card">
+    <strong>🎯 Kemajuan Misi</strong>
+    <div class="progress"><div id="map-progress" style="width:0%"></div></div>
+    <p id="map-status">0 / 5 misi selesai</p>
+  </div>
+  <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;justify-content:center">
+    <button class="btn-secondary" onclick="showReview()">📖 Ulang Kaji</button>
+    <button class="btn-secondary" onclick="showLeaderboard()">🏆 Leaderboard</button>
+  </div>
+</section>
+
+<section id="quiz" class="screen">
+  <div class="stats">
+    <span id="mission-title">🏰 Kota Kata Nama</span>
+    <span>⏱️ <span id="timer">25</span>s</span>
+    <span>Soalan <span id="qnum">1</span>/<span id="qtotal">8</span></span>
+    <span class="lives" id="quiz-lives">❤️❤️❤️❤️❤️</span>
+  </div>
+  <div class="progress"><div id="quiz-progress" style="width:0%"></div></div>
+  <div class="question-box"><span class="category" id="category">KATA NAMA</span><div class="question" id="question">Loading...</div></div>
+  <div class="options" id="options"></div>
+  <div class="explanation" id="explanation"></div>
+  <button id="next-btn" class="btn-primary" style="display:none;margin-top:16px" onclick="nextQuestion()">Soalan Seterusnya ➡️</button>
+</section>
+
+<section id="result" class="screen">
+  <div id="result-icon" style="font-size:5rem">🏆</div>
+  <h2 id="result-title" style="font-size:2.2rem;font-weight:bold">Syabas!</h2>
+  <p id="result-subtitle" style="margin:7px 0 20px"></p>
+  <div class="card">
+    <div class="grid2">
+      <div><small>Markah</small><h2 id="final-score">0</h2></div>
+      <div><small>Betul</small><h2 id="final-correct">0/8</h2></div>
+      <div><small>Ketepatan</small><h2 id="final-accuracy">0%</h2></div>
+      <div><small>Nyawa</small><h2 id="final-lives">❤️</h2></div>
+    </div>
+    <div class="badges" id="earned-badges"></div>
+  </div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:18px">
+    <button class="btn-primary" onclick="showMap()">🗺️ Ke Peta</button>
+    <button class="btn-secondary" onclick="retryMission()">🔄 Cuba Lagi</button>
+    <button class="btn-secondary" onclick="showReview()">📖 Ulang Kaji</button>
+  </div>
+</section>
+
+<section id="complete" class="screen">
+  <div style="font-size:6rem">👑</div><h2 style="font-size:2.5rem;font-weight:bold">PULAU BAHASA DISELAMATKAN!</h2>
+  <p style="max-width:700px;margin:8px 0 20px">Tahniah! Anda telah melengkapkan semua 5 misi dan menewaskan Boss Bahasa.</p>
+  <div class="card"><h2>🌟 Skor Akhir</h2><div style="font-size:3rem;font-weight:bold;margin:10px" id="grand-score">0</div><p id="grand-summary"></p><div class="badges" id="all-badges"></div></div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:18px">
+    <button class="btn-primary" onclick="saveAndShowLeaderboard()">🏆 Simpan & Leaderboard</button>
+    <button class="btn-secondary" onclick="showMap()">🗺️ Peta</button>
+    <button class="btn-secondary" onclick="restartGame()">🔄 Main Semula</button>
+  </div>
+</section>
+</div>
+
+<div class="modal" id="modal">
+ <div class="modal-card"><div id="modal-content"></div><button class="btn-secondary" onclick="closeModal()" style="margin-top:18px">Tutup</button></div>
+</div>
+
+<script>
+const missions=[
+ {id:'kata_nama',icon:'🏰',title:'Kota Kata Nama',desc:'Kata Nama Am, Khas & Ganti Nama'},
+ {id:'kata_kerja',icon:'🌲',title:'Hutan Kata Kerja',desc:'Kata Kerja & Imbuhan'},
+ {id:'kata_adjektif',icon:'🌋',title:'Gunung Adjektif',desc:'Sifat, Warna, Ukuran & Perasaan'},
+ {id:'ayat',icon:'🏛️',title:'Kuil Ayat',desc:'Ayat Tanya, Ayat Seruan & Kata Hubung'},
+ {id:'boss',icon:'🐉',title:'Boss Bahasa',desc:'Cabaran Campuran Semua Topik',boss:true}
+];
+
+const bank={
+kata_nama:[
+['Kata Nama Khas','Antara berikut, yang manakah Kata Nama Khas yang betul?',['kuala lumpur','Kuala Lumpur','sekolah','murid'],'Kuala Lumpur','Kata Nama Khas ditulis dengan huruf besar pada awal kata yang berkenaan.'],
+['Kata Nama Am','Pilih Kata Nama Am.',['Ali','Johor','buku','Malaysia'],'buku','Buku merujuk benda secara umum.'],
+['Kata Ganti Nama','“____ akan datang ke sekolah esok,” kata Amir.',['Saya','Dia','Mereka','Baginda'],'Saya','Saya ialah kata ganti nama diri pertama.'],
+['Kata Nama Terbitan','Manakah kata nama terbitan?',['lari','pelari','berlari','melarikan'],'pelari','Pelari ialah kata nama yang terbit daripada kata dasar lari dengan imbuhan pe-.'],
+['Kata Ganti Nama Tunjuk','“Letakkan kasut di ____,” kata ibu sambil menunjuk tempat berhampiran.',['sini','sana','mana','siapa'],'sini','Sini menunjukkan tempat yang dekat dengan penutur.'],
+['Kata Nama Khas','Yang manakah nama khas bagi sebuah negeri?',['negeri','Johor','bandar','sekolah'],'Johor','Johor ialah nama khas bagi sebuah negeri.'],
+['Kata Nama Am','Pilih perkataan yang merujuk manusia secara umum.',['guru','Cikgu Siti','Malaysia','Isnin'],'guru','Guru ialah kata nama am.'],
+['Kata Ganti Nama','Kata ganti nama untuk beberapa orang ialah...',['kami','dia','beliau','baginda'],'kami','Kami ialah kata ganti nama diri pertama jamak.']
+],
+kata_kerja:[
+['Kata Kerja','Ibu sedang ____ nasi di dapur.',['masak','memasak','pemasak','dimasak'],'memasak','Memasak ialah kata kerja yang menunjukkan perbuatan.'],
+['Kata Kerja Tak Transitif','Adik sedang ____ di atas katil.',['tidur','tidurkan','menidurkan','tiduri'],'tidur','Tidur boleh berdiri tanpa objek.'],
+['Kata Kerja Pasif','Buku itu telah ____ oleh Aiman.',['membaca','dibaca','bacakan','terbaca'],'dibaca','Ayat pasif menggunakan bentuk dibaca dalam contoh ini.'],
+['Imbuhan meN-','Ali ____ bola ke arah rakannya.',['menendang','ditendang','tendangan','penendang'],'menendang','Kata dasar tendang menerima imbuhan meN- menjadi menendang.'],
+['Kata Kerja','Kakak ____ rambut adik.',['menyikat','disikat','sikatan','tersikat'],'menyikat','Menyikat menunjukkan perbuatan yang dilakukan oleh kakak.'],
+['Kata Kerja','Burung itu ____ di atas pokok.',['terbang','menerbangkan','diterbangkan','penerbangan'],'terbang','Terbang ialah kata kerja yang sesuai dengan subjek burung.'],
+['Imbuhan','Mereka sedang ____ halaman sekolah.',['membersihkan','dibersihkan','pembersih','bersih'],'membersihkan','Membersihkan ialah kata kerja berimbuhan.'],
+['Kata Kerja Pasif','Bola itu ____ oleh Hakim.',['menendang','ditendang','tendangan','menendangkan'],'ditendang','Bola menerima perbuatan, maka bentuk pasif digunakan.']
+],
+kata_adjektif:[
+['Kata Adjektif Sifat','Budak yang ____ itu suka membantu orang.',['baik','merah','bulat','panjang'],'baik','Baik menerangkan sifat seseorang.'],
+['Kata Adjektif Warna','Baju itu berwarna ____.',['manis','biru','lebar','gembira'],'biru','Biru ialah kata adjektif warna.'],
+['Kata Adjektif Ukuran','Sungai itu sangat ____.',['harum','lebar','manis','sedih'],'lebar','Lebar menerangkan ukuran.'],
+['Kata Adjektif Perasaan','Siti berasa ____ selepas mendapat hadiah.',['gembira','tinggi','merah','bulat'],'gembira','Gembira menerangkan perasaan.'],
+['Kata Adjektif Bentuk','Meja itu berbentuk ____.',['bulat','marah','lambat','wangi'],'bulat','Bulat menerangkan bentuk.'],
+['Kata Adjektif Jarak','Rumah nenek sangat ____ dari sini.',['jauh','merah','sedih','lembut'],'jauh','Jauh menerangkan jarak.'],
+['Kata Adjektif Waktu','Bas tiba ____ pada pagi itu.',['awal','bulat','manis','tinggi'],'awal','Awal menerangkan waktu.'],
+['Kata Adjektif Pancaindera','Bunga itu sangat ____.',['harum','panjang','takut','biru'],'harum','Harum menerangkan sesuatu yang dapat dihidu.']
+],
+ayat:[
+['Ayat Tanya','Kata tanya untuk menanyakan orang ialah...',['apa','siapa','bila','mengapa'],'siapa','Siapa digunakan untuk menanyakan orang.'],
+['Ayat Tanya','Kata tanya untuk menanyakan tempat ialah...',['di mana','bila','siapa','berapa'],'di mana','Di mana digunakan untuk menanyakan tempat.'],
+['Ayat Tanya','“____ kamu datang lewat?”',['Mengapa','Siapa','Apa','Bila'],'Mengapa','Mengapa digunakan untuk menanyakan sebab.'],
+['Ayat Tanya','“____ kamu akan bertolak?”',['Bila','Siapa','Apa','Di mana'],'Bila','Bila digunakan untuk menanyakan masa.'],
+['Kata Hubung','Ali membaca buku ____ adiknya menonton televisyen.',['dan','kerana','supaya','tetapi'],'dan','Dan menghubungkan dua perkara.'],
+['Kata Hubung','Saya membawa payung ____ hari hujan.',['kerana','dan','atau','tetapi'],'kerana','Kerana menerangkan sebab.'],
+['Ayat Seruan','Ayat seruan biasanya diakhiri dengan tanda...',['.','?','!',';'],'!','Ayat seruan menunjukkan perasaan seperti kagum, marah atau terkejut.'],
+['Kata Hubung','Kamu mahu teh ____ kopi?',['atau','dan','kerana','supaya'],'atau','Atau menunjukkan pilihan.']
+],
+boss:[
+['Campuran','Pilih ayat yang betul.',['Ali membaca buku.','Ali membaca buku?','Ali membaca buku!','Ali membaca buku,'],'Ali membaca buku.','Ayat penyata yang lengkap diakhiri noktah.'],
+['Campuran','“____ nama kamu?”',['Apa','Siapa','Bila','Mengapa'],'Apa','Apa digunakan untuk menanyakan benda atau perkara.'],
+['Campuran','Pilih kata adjektif.',['berlari','cantik','sekolah','membaca'],'cantik','Cantik menerangkan sifat.'],
+['Campuran','Pilih kata kerja.',['merah','rumah','berjalan','gembira'],'berjalan','Berjalan menunjukkan perbuatan.'],
+['Campuran','Pilih Kata Nama Khas.',['sekolah','kucing','Johor','buku'],'Johor','Johor ialah nama khas dan ditulis dengan huruf besar.'],
+['Campuran','Kata hubung yang sesuai: “Aiman rajin ____ bijak.”',['dan','atau','kerana','supaya'],'dan','Dan menghubungkan dua maklumat.'],
+['Campuran','“____ kamu tidak hadir semalam?”',['Mengapa','Apa','Siapa','Bila'],'Mengapa','Mengapa digunakan untuk menanyakan sebab.'],
+['Boss Akhir','Pilih ayat yang paling tepat.',['Adik makan nasi.','Adik makan nasi?','Adik makan nasi!','Adik makan nasi,'],'Adik makan nasi.','Ayat penyata lengkap menggunakan noktah.']
+]
+};
+
+let state={
+name:'Wira Bahasa',difficulty:'mudah',score:0,lives:5,missionIndex:0,qIndex:0,questions:[],
+correct:0,answered:0,timer:null,time:25,sound:true,completed:[false,false,false,false,false],
+badges:new Set(),gameStarted:false
+};
+
+const difficultyTime={mudah:25,sederhana:18,sukar:12};
+
+function setDifficulty(d,b){state.difficulty=d;document.querySelectorAll('.mode-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active')}
+function startGame(){
+ state.name=document.getElementById('hero-name').value.trim()||'Wira Bahasa';
+ state.score=0;state.lives=5;state.missionIndex=0;state.qIndex=0;state.correct=0;state.answered=0;
+ state.completed=[false,false,false,false,false];state.badges=new Set();state.gameStarted=true;
+ document.getElementById('hero-name-display').textContent=state.name;updateHeader();showMap();
+}
+function updateHeader(){document.getElementById('score-display').textContent=state.score;document.getElementById('lives-display').textContent=state.lives;document.getElementById('quiz-lives').textContent='❤️'.repeat(state.lives)+'🖤'.repeat(Math.max(0,5-state.lives))}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+function showMap(){
+ if(!state.gameStarted){showScreen('welcome');return}
+ renderMissions();showScreen('map')
+}
+function renderMissions(){
+ const el=document.getElementById('missions');el.innerHTML='';
+ missions.forEach((m,i)=>{
+   const unlocked=i===0||state.completed[i-1], done=state.completed[i];
+   const d=document.createElement('div');d.className='mission '+(done?'done ':'')+(!unlocked?'locked ':'')+(m.boss?'boss':'');
+   d.innerHTML=`<div class="mission-icon">${done?'🏅':m.icon}</div><h3>${m.title}</h3><p>${m.desc}</p><strong>${done?'✓ Selesai':unlocked?'▶ Main':'🔒 Terkunci'}</strong>`;
+   if(unlocked)d.onclick=()=>startMission(i);
+   el.appendChild(d);
+ });
+ const n=state.completed.filter(Boolean).length;document.getElementById('map-progress').style.width=(n/5*100)+'%';document.getElementById('map-status').textContent=`${n} / 5 misi selesai`;
+}
+function startMission(i){
+ state.missionIndex=i;state.qIndex=0;state.correct=0;state.answered=0;
+ state.questions=[...bank[missions[i].id]];
+ // Boss gets 8 questions; normal missions get 8 => 40 total.
+ loadQuestion();showScreen('quiz');
+}
+function loadQuestion(){
+ clearInterval(state.timer);
+ const q=state.questions[state.qIndex], total=state.questions.length;
+ document.getElementById('mission-title').textContent=missions[state.missionIndex].icon+' '+missions[state.missionIndex].title;
+ document.getElementById('qnum').textContent=state.qIndex+1;document.getElementById('qtotal').textContent=total;
+ document.getElementById('quiz-progress').style.width=(state.qIndex/total*100)+'%';
+ document.getElementById('category').textContent=q[0];document.getElementById('question').textContent=q[1];
+ const options=document.getElementById('options');options.innerHTML='';
+ q[2].forEach((opt,i)=>{const b=document.createElement('button');b.className='option';b.innerHTML=`${String.fromCharCode(65+i)}. ${opt}`;b.onclick=()=>answer(i,b);options.appendChild(b)});
+ document.getElementById('explanation').style.display='none';document.getElementById('next-btn').style.display='none';
+ state.time=difficultyTime[state.difficulty];document.getElementById('timer').textContent=state.time;updateHeader();
+ state.timer=setInterval(()=>{state.time--;document.getElementById('timer').textContent=state.time;if(state.time<=0){clearInterval(state.timer);answer(-1,null)}},1000)
+}
+function answer(i,button){
+ clearInterval(state.timer);state.answered++;
+ const q=state.questions[state.qIndex], correct=i===q[2].indexOf(q[3]);
+ document.querySelectorAll('.option').forEach((b,j)=>{b.onclick=null;if(j===q[2].indexOf(q[3]))b.classList.add('correct')});
+ if(correct){
+   state.correct++;let pts=100+state.time*5;if(state.missionIndex===4)pts+=50;state.score+=pts;if(button)button.classList.add('correct');play('correct');
+   document.getElementById('explanation').innerHTML=`<strong>🎉 Betul! +${pts} markah</strong><br>${q[4]}`;
+ }else{
+   state.lives=Math.max(0,state.lives-1);if(button)button.classList.add('wrong');play('wrong');
+   document.getElementById('explanation').innerHTML=`<strong>❌ Kurang tepat.</strong><br>Jawapan: <b>${q[3]}</b><br>${q[4]}${i===-1?'<br>⏰ Masa tamat!':''}`;
+ }
+ document.getElementById('explanation').style.display='block';document.getElementById('next-btn').style.display='inline-block';updateHeader();
+ if(state.lives===0){document.getElementById('next-btn').textContent='💔 Tamat Misi';}
+}
+function nextQuestion(){
+ if(state.lives===0){finishMission();return}
+ state.qIndex++;
+ if(state.qIndex<state.questions.length)loadQuestion();else finishMission();
+}
+function finishMission(){
+ clearInterval(state.timer);state.completed[state.missionIndex]=true;
+ const accuracy=Math.round(state.correct/state.questions.length*100);
+ if(accuracy===100)state.badges.add('🌟 Master');else if(accuracy>=80)state.badges.add('🥇 Hebat');else if(accuracy>=60)state.badges.add('🥈 Pejuang');
+ if(state.missionIndex===4)state.badges.add('🐉 Penewas Boss');
+ if(state.lives===5)state.badges.add('❤️ Tanpa Cedera');
+ document.getElementById('result-icon').textContent=state.missionIndex===4?'👑':accuracy>=80?'🏆':'🛡️';
+ document.getElementById('result-title').textContent=state.missionIndex===4?'Boss Bahasa Tewas!':accuracy>=80?'Luar Biasa, Wira Bahasa!':'Percubaan Yang Baik!';
+ document.getElementById('result-subtitle').textContent=`${missions[state.missionIndex].title} selesai.`;
+ document.getElementById('final-score').textContent=state.score;document.getElementById('final-correct').textContent=`${state.correct}/${state.questions.length}`;
+ document.getElementById('final-accuracy').textContent=accuracy+'%';document.getElementById('final-lives').textContent='❤️'.repeat(state.lives)+'🖤'.repeat(5-state.lives);
+ document.getElementById('earned-badges').innerHTML=[...state.badges].map(x=>`<span class="badge">${x}</span>`).join('');
+ document.getElementById('next-btn').textContent='Soalan Seterusnya ➡️';
+ if(state.completed.every(Boolean))setTimeout(()=>showComplete(),350);else showScreen('result');
+}
+function retryMission(){startMission(state.missionIndex)}
+function showComplete(){
+ document.getElementById('grand-score').textContent=state.score;
+ document.getElementById('grand-summary').textContent=`${state.name} berjaya melengkapkan 40 soalan dan semua 5 misi!`;
+ document.getElementById('all-badges').innerHTML=[...state.badges].map(x=>`<span class="badge">${x}</span>`).join('');
+ showScreen('complete');
+}
+function showReview(){
+ const topics=[
+ ['🏰 Kota Kata Nama','Kata Nama Am = manusia, tempat, haiwan atau benda secara umum. Kata Nama Khas = nama khusus dan menggunakan huruf besar.'],
+ ['🌲 Hutan Kata Kerja','Kata kerja menunjukkan perbuatan. Contoh: membaca, berlari, menyapu.'],
+ ['🌋 Gunung Adjektif','Kata adjektif menerangkan sifat/keadaan seperti baik, biru, lebar, gembira, bulat, jauh dan harum.'],
+ ['🏛️ Kuil Ayat','Siapa = orang, apa = benda/perkara, bila = masa, di mana = tempat, mengapa = sebab.'],
+ ['🔗 Kata Hubung','Dan = tambahan, atau = pilihan, kerana = sebab. Ayat seruan biasanya menggunakan tanda seru (!).']
+ ];
+ document.getElementById('modal-content').innerHTML=`<h2 style="font-size:1.7rem;font-weight:bold">📖 Ulang Kaji Pantas</h2>${topics.map(x=>`<div style="text-align:left;margin-top:14px;padding:13px;background:#F8FAFC;border-radius:12px"><b>${x[0]}</b><p style="margin-top:5px">${x[1]}</p></div>`).join('')}`;
+ document.getElementById('modal').style.display='flex';
+}
+function showLeaderboard(){
+ let rows=JSON.parse(localStorage.getItem('wiraLeaderboard')||'[]');
+ rows.sort((a,b)=>b.score-a.score);rows=rows.slice(0,10);
+ document.getElementById('modal-content').innerHTML=`<h2 style="font-size:1.7rem;font-weight:bold">🏆 Leaderboard</h2><p>Skor disimpan pada peranti ini.</p>${rows.length?`<table><tr><th>#</th><th>Wira</th><th>Skor</th></tr>${rows.map((r,i)=>`<tr><td>${i+1}</td><td>${r.name}</td><td>${r.score}</td></tr>`).join('')}</table>`:'<p style="margin-top:15px">Belum ada rekod. Lengkapkan permainan untuk menjadi wira pertama!</p>'}`;
+ document.getElementById('modal').style.display='flex';
+}
+function saveAndShowLeaderboard(){
+ let rows=JSON.parse(localStorage.getItem('wiraLeaderboard')||'[]');rows.push({name:state.name,score:state.score,date:new Date().toLocaleDateString('ms-MY')});localStorage.setItem('wiraLeaderboard',JSON.stringify(rows));showLeaderboard()
+}
+function closeModal(){document.getElementById('modal').style.display='none'}
+function toggleSound(){state.sound=!state.sound;alert(state.sound?'🔊 Bunyi diaktifkan':'🔇 Bunyi dinyahaktifkan')}
+function play(type){
+ if(!state.sound)return;try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;const c=new C(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=type==='correct'?660:180;g.gain.value=.08;o.start();o.stop(c.currentTime+.15)}catch(e){}
+}
+function restartGame(){startGame()}
+</script>
+</body>
+</html>
